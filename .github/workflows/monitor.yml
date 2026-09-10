@@ -73,6 +73,12 @@ jobs:
           cp -R data _site/data
 
       - uses: actions/configure-pages@v5
+        # Enable Pages (build type: GitHub Actions) on first run if the repo
+        # owner has not clicked it on in Settings → Pages. Without this the
+        # step fails with "Get Pages site failed … Not Found" until Pages is
+        # turned on manually.
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
