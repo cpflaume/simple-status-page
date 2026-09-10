@@ -1,5 +1,7 @@
 # Simple Status Page
 
+[![Live status page](https://img.shields.io/badge/Live-status.copf--demo.de-18a058?style=for-the-badge&logo=githubpages&logoColor=white)](https://status.copf-demo.de)
+
 A public, automatically-updating status page for whatever services you run —
 the kind of page cloud providers publish for their offerings. Point it at your
 own endpoints and it monitors them for you.
