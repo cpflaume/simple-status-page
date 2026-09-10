@@ -1,0 +1,8 @@
+{
+  "name": "copf-demo status",
+  "description": "Live status of the public copf-demo.de services.",
+  "generated_at": null,
+  "overall_status": "operational",
+  "overall_text": "Awaiting first status check",
+  "checks": []
+}

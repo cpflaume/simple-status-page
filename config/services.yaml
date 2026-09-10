@@ -1,0 +1,97 @@
+# ---------------------------------------------------------------------------
+# Declarative catalog of everything the status page monitors.
+#
+# This is the ONLY file you edit day-to-day: add a service = add a check here.
+# Each check has a `type:` that selects a checker (see collector/checkers/).
+# Today two types exist — `http` and `tcp` — but the model is deliberately open:
+# a future `prometheus`, `push`, `dns`, ... type plugs in with no other changes.
+#
+# Common keys:
+#   id            unique, stable slug (used as the history filename) — never reuse
+#   name          human label shown on the page
+#   type          which checker runs it (http | tcp)
+#   enabled       set false to keep a check defined but not run (default true)
+#
+# http keys:  url, method (GET), expect_status ([200]), body_contains, timeout,
+#             degraded_latency_ms
+# tcp  keys:  host, port, expect_banner (e.g. "220" for SMTP), timeout
+# ---------------------------------------------------------------------------
+name: copf-demo status
+description: Live status of the public copf-demo.de services.
+
+# Applied to every check unless the check overrides them.
+defaults:
+  timeout: 10            # seconds before a probe is considered failed
+  degraded_latency_ms: 2000  # slower than this (but reachable) => "degraded"
+
+groups:
+  # Public web frontends — a 200 on "/" means Caddy is serving the SPA/site.
+  - name: Web applications
+    checks:
+      - id: announcements-ui
+        name: Announcements
+        type: http
+        url: https://announcements.copf-demo.de/
+        expect_status: [200]
+
+      - id: jurtenburg-ui
+        name: Jurtenburg (Inventory)
+        type: http
+        url: https://jurtenburg.copf-demo.de/
+        expect_status: [200]
+
+      - id: provisioncalculator-ui
+        name: Provision Calculator
+        type: http
+        url: https://provisioncalculator.copf-demo.de/
+        expect_status: [200]
+
+      - id: backup-restore
+        name: Backup & Restore
+        type: http
+        # Backend serves API + UI under one domain; "/" may redirect to a login
+        # page, so accept 200 and the common auth redirects.
+        url: https://backup.copf-demo.de/
+        expect_status: [200, 302, 401]
+
+      - id: showcase
+        name: Showcase
+        type: http
+        url: https://showcase.copf-demo.de/
+        expect_status: [200]
+
+  # Backend APIs — /v3/api-docs is the public Springdoc OpenAPI JSON. A 200
+  # there proves the Spring Boot process (not just the frontend) is alive.
+  - name: APIs
+    checks:
+      - id: announcements-api
+        name: Announcements API
+        type: http
+        url: https://announcements.copf-demo.de/v3/api-docs
+        expect_status: [200]
+
+      - id: jurtenburg-api
+        name: Jurtenburg API
+        type: http
+        url: https://jurtenburg.copf-demo.de/v3/api-docs
+        expect_status: [200]
+
+      - id: provisioncalculator-api
+        name: Provision Calculator API
+        type: http
+        url: https://provisioncalculator.copf-demo.de/v3/api-docs
+        expect_status: [200]
+
+  # Mail — the typo-mail-responder speaks SMTP, which Caddy can't proxy.
+  # DISABLED by default: GitHub-hosted runners block outbound port 25, so this
+  # probe cannot succeed from a default runner. See README ("SMTP / port 25")
+  # for the two ways to turn it on (self-hosted runner, or push-based report).
+  - name: Mail
+    checks:
+      - id: typo-mail-responder
+        name: Typo mail responder (SMTP)
+        type: tcp
+        host: mail.copf-demo.de
+        port: 25
+        expect_banner: "220"
+        enabled: false

@@ -1,0 +1,4 @@
+# The collector itself uses only the Python standard library for probing
+# (urllib, socket) — no HTTP client dependency. PyYAML is the single dep, used
+# to read the human-friendly services.yaml catalog.
+PyYAML>=6.0,<7.0

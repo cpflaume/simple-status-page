@@ -1,0 +1,170 @@
+:root {
+  --bg: #f6f8fa;
+  --card: #ffffff;
+  --border: #e3e8ee;
+  --text: #1c2530;
+  --muted: #67727e;
+  --up: #18a058;
+  --up-soft: #e3f5ea;
+  --degraded: #d99400;
+  --degraded-soft: #fbf1d9;
+  --down: #d0393e;
+  --down-soft: #fbe4e5;
+  --nodata: #cfd6dd;
+  --shadow: 0 1px 2px rgba(16, 24, 32, 0.06), 0 1px 3px rgba(16, 24, 32, 0.05);
+  --radius: 12px;
+  --maxw: 760px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1419;
+    --card: #171d24;
+    --border: #262f3a;
+    --text: #e6edf3;
+    --muted: #8b98a5;
+    --up-soft: #122a1e;
+    --degraded-soft: #2c2510;
+    --down-soft: #2c1517;
+    --nodata: #37424e;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 40px 20px 64px;
+}
+
+a { color: inherit; }
+.muted { color: var(--muted); }
+
+.site-head h1 {
+  margin: 0 0 4px;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+.site-head p { margin: 0; font-size: 15px; }
+
+/* --- overall banner --- */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 28px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 18px;
+  font-weight: 600;
+}
+.banner__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+.banner--operational { background: var(--up-soft); border-color: var(--up); }
+.banner--operational .banner__dot { background: var(--up); }
+.banner--degraded { background: var(--degraded-soft); border-color: var(--degraded); }
+.banner--degraded .banner__dot { background: var(--degraded); }
+.banner--partial_outage,
+.banner--major_outage { background: var(--down-soft); border-color: var(--down); }
+.banner--partial_outage .banner__dot,
+.banner--major_outage .banner__dot { background: var(--down); }
+.banner--error .banner__dot { background: var(--degraded); }
+
+/* --- groups + rows --- */
+.group { margin-bottom: 26px; }
+.group__title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.group__card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.row {
+  padding: 16px 18px;
+  border-top: 1px solid var(--border);
+}
+.row:first-child { border-top: none; }
+.row__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.row__name { font-weight: 600; }
+.row__detail { font-size: 12.5px; margin-top: 2px; }
+
+.pill {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pill--up { color: var(--up); background: var(--up-soft); }
+.pill--degraded { color: var(--degraded); background: var(--degraded-soft); }
+.pill--down { color: var(--down); background: var(--down-soft); }
+.pill--nodata { color: var(--muted); background: transparent; border: 1px solid var(--border); }
+
+/* --- 90-day uptime bar --- */
+.bar {
+  display: flex;
+  gap: 2px;
+  margin-top: 12px;
+  height: 30px;
+  align-items: stretch;
+}
+.bar__cell {
+  flex: 1 1 0;
+  min-width: 2px;
+  border-radius: 2px;
+  background: var(--nodata);
+}
+.bar__cell--up { background: var(--up); }
+.bar__cell--degraded { background: var(--degraded); }
+.bar__cell--down { background: var(--down); }
+.bar__cell--nodata { background: var(--nodata); opacity: 0.5; }
+
+.bar__legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.site-foot { margin-top: 40px; font-size: 12.5px; }
+.site-foot p { margin: 4px 0; }
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}

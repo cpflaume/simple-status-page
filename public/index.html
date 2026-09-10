@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>copf-demo status</title>
+    <meta name="description" content="Live status of the public copf-demo.de services." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2318a058'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="site-head">
+        <h1 id="site-name">copf-demo status</h1>
+        <p id="site-desc" class="muted">Live status of the public copf-demo.de services.</p>
+      </header>
+
+      <!-- Overall status banner; class is set from overall_status -->
+      <section id="banner" class="banner banner--loading" aria-live="polite">
+        <span class="banner__dot" aria-hidden="true"></span>
+        <span id="banner-text" class="banner__text">Loading status…</span>
+      </section>
+
+      <!-- Groups + checks are rendered here -->
+      <div id="groups"></div>
+
+      <footer class="site-foot muted">
+        <p>
+          Last updated <span id="updated">—</span>.
+          Auto-refreshes every 60&nbsp;s · checks run every few minutes.
+        </p>
+        <p>
+          Hosted on GitHub Pages, independent of the monitored infrastructure.
+          <a id="repo-link" href="#" rel="noopener">Source &amp; history</a>.
+        </p>
+      </footer>
+    </main>
+
+    <script src="assets/app.js"></script>
+  </body>
+</html>

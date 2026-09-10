@@ -1,0 +1,82 @@
+name: monitor
+
+# Runs the collector on a schedule, commits the fresh status snapshot (git =
+# durable incident history), and publishes the page to GitHub Pages.
+#
+# Cost: this repo is PUBLIC, so GitHub-hosted Actions minutes are free and
+# unlimited. Everything below is one job on the standard ubuntu runner, so a
+# single rounded minute is billed per run (and free on a public repo).
+#
+# To change how often checks run, edit the cron line marked CADENCE below.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # CADENCE: every 5 minutes
+  workflow_dispatch: {} # run on demand from the Actions tab
+  push:
+    branches: [main]
+    # Redeploy when the catalog, the site, or the collector changes — NOT when
+    # only data/ changes (that is what the scheduled run commits), so there is
+    # no self-trigger loop.
+    paths:
+      - "config/**"
+      - "public/**"
+      - "collector/**"
+      - ".github/workflows/monitor.yml"
+
+# Least-privilege: write commits (data) + publish Pages via OIDC.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Never run two monitors at once; let a newer run supersede a queued one.
+concurrency:
+  group: monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install collector dependencies
+        run: pip install -r collector/requirements.txt
+
+      - name: Run checks
+        run: python collector/collect.py
+
+      - name: Commit updated status data
+        run: |
+          git config user.name "status-bot"
+          git config user.email "status-bot@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No status change to commit."
+          else
+            git commit -m "chore(data): update status snapshot [skip ci]"
+            git push
+          fi
+
+      - name: Assemble site (static page + latest data)
+        run: |
+          mkdir -p _site
+          cp -R public/. _site/
+          cp -R data _site/data
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
