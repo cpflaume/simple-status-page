@@ -1,9 +1,9 @@
 {
   "name": "copf-demo status",
   "description": "Live status of the public copf-demo.de services.",
-  "generated_at": "2026-09-10T17:40:44+00:00",
-  "overall_status": "partial_outage",
-  "overall_text": "Partial system outage",
+  "generated_at": "2026-09-10T19:51:01+00:00",
+  "overall_status": "degraded",
+  "overall_text": "Degraded performance",
   "checks": [
     {
       "id": "announcements-ui",
@@ -12,9 +12,9 @@
       "type": "http",
       "url": "https://announcements.copf-demo.de/",
       "status": "up",
-      "latency_ms": 456,
+      "latency_ms": 528,
       "detail": "HTTP 200",
-      "checked_at": "2026-09-10T17:40:44+00:00",
+      "checked_at": "2026-09-10T19:51:01+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -32,9 +32,9 @@
       "type": "http",
       "url": "https://jurtenburg.copf-demo.de/",
       "status": "up",
-      "latency_ms": 445,
+      "latency_ms": 452,
       "detail": "HTTP 200",
-      "checked_at": "2026-09-10T17:40:45+00:00",
+      "checked_at": "2026-09-10T19:51:01+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -51,17 +51,17 @@
       "group": "Web applications",
       "type": "http",
       "url": "https://provisioncalculator.copf-demo.de/",
-      "status": "down",
-      "latency_ms": 390,
-      "detail": "URLError: <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1010)>",
-      "checked_at": "2026-09-10T17:40:45+00:00",
-      "uptime_24h": 66.667,
-      "uptime_90d": 66.667,
+      "status": "up",
+      "latency_ms": 531,
+      "detail": "HTTP 200",
+      "checked_at": "2026-09-10T19:51:02+00:00",
+      "uptime_24h": 75.0,
+      "uptime_90d": 75.0,
       "days": [
         {
           "date": "2026-09-10",
           "status": "down",
-          "uptime": 66.667
+          "uptime": 75.0
         }
       ]
     },
@@ -72,9 +72,9 @@
       "type": "http",
       "url": "https://backup.copf-demo.de/",
       "status": "up",
-      "latency_ms": 418,
+      "latency_ms": 387,
       "detail": "HTTP 200",
-      "checked_at": "2026-09-10T17:40:46+00:00",
+      "checked_at": "2026-09-10T19:51:02+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -92,9 +92,9 @@
       "type": "http",
       "url": "https://showcase.copf-demo.de/",
       "status": "up",
-      "latency_ms": 513,
+      "latency_ms": 493,
       "detail": "HTTP 200",
-      "checked_at": "2026-09-10T17:40:46+00:00",
+      "checked_at": "2026-09-10T19:51:03+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -112,9 +112,9 @@
       "type": "http",
       "url": "https://announcements.copf-demo.de/v3/api-docs",
       "status": "up",
-      "latency_ms": 546,
+      "latency_ms": 403,
       "detail": "HTTP 200",
-      "checked_at": "2026-09-10T17:40:47+00:00",
+      "checked_at": "2026-09-10T19:51:03+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -132,9 +132,9 @@
       "type": "http",
       "url": "https://jurtenburg.copf-demo.de/v3/api-docs",
       "status": "up",
-      "latency_ms": 549,
+      "latency_ms": 376,
       "detail": "HTTP 200",
-      "checked_at": "2026-09-10T17:40:47+00:00",
+      "checked_at": "2026-09-10T19:51:04+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -151,17 +151,17 @@
       "group": "APIs",
       "type": "http",
       "url": "https://provisioncalculator.copf-demo.de/v3/api-docs",
-      "status": "down",
-      "latency_ms": 384,
-      "detail": "URLError: <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1010)>",
-      "checked_at": "2026-09-10T17:40:48+00:00",
-      "uptime_24h": 66.667,
-      "uptime_90d": 66.667,
+      "status": "degraded",
+      "latency_ms": 2381,
+      "detail": "slow: 2381 ms > 2000 ms",
+      "checked_at": "2026-09-10T19:51:06+00:00",
+      "uptime_24h": 75.0,
+      "uptime_90d": 75.0,
       "days": [
         {
           "date": "2026-09-10",
           "status": "down",
-          "uptime": 66.667
+          "uptime": 75.0
         }
       ]
     }
