@@ -202,9 +202,42 @@ a { color: inherit; }
   background: var(--up-soft);
 }
 
+.detail__plot {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.detail__yaxis {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+}
+.detail__ycap {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  align-self: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+.detail__yticks {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 72px;
+  padding-bottom: 6px; /* align "0" with the bar baseline (chip 4px + gap 2px) */
+  text-align: right;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 30px;
+}
+
 .detail__stripwrap {
   overflow-x: auto;
   padding-bottom: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .detail__strip { min-width: 100%; }
 
@@ -222,7 +255,12 @@ a { color: inherit; }
   flex-direction: column;
   gap: 2px;
   justify-content: flex-end;
+  cursor: pointer;
+  border-radius: 3px;
 }
+.spark__col:hover { background: var(--border); }
+.spark__col:focus-visible { outline: 2px solid var(--muted); outline-offset: 1px; }
+.spark__col--sel { background: var(--border); box-shadow: inset 0 0 0 1px var(--muted); }
 .spark__track {
   flex: 1 1 auto;
   display: flex;
@@ -248,7 +286,52 @@ a { color: inherit; }
 .spark__chip--degraded { background: var(--degraded); }
 .spark__chip--down { background: var(--down); }
 
+/* Time ruler under the strip. Same flex layout as .spark so ticks align with
+ * the bars; labels are absolutely positioned so they can overflow their
+ * (often very narrow) cell without pushing neighbours around. */
+.spark-xaxis {
+  display: flex;
+  gap: 2px;
+  margin-top: 4px;
+  padding-bottom: 30px; /* reserve room for the absolutely-placed labels */
+}
+.spark-xaxis--raw .spark-xaxis__cell { min-width: 5px; }
+.spark-xaxis--hour .spark-xaxis__cell { min-width: 10px; }
+.spark-xaxis__cell {
+  flex: 1 1 0;
+  position: relative;
+}
+.spark-xaxis__mark {
+  width: 1px;
+  height: 4px;
+  margin: 0 auto;
+  background: var(--muted);
+}
+.spark-xaxis__label {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10.5px;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.spark-xaxis__cell--start .spark-xaxis__label { left: 0; transform: none; text-align: left; }
+.spark-xaxis__cell--start .spark-xaxis__mark { margin: 0; }
+.spark-xaxis__cell--end .spark-xaxis__label { left: auto; right: 0; transform: none; text-align: right; }
+.spark-xaxis__cell--end .spark-xaxis__mark { margin: 0 0 0 auto; }
+.spark-xaxis__day { display: block; color: var(--text); font-weight: 600; }
+
 .detail__meta { font-size: 12px; margin-top: 8px; }
+.detail__readout {
+  font-size: 12.5px;
+  margin-top: 6px;
+  min-height: 18px;
+}
+.detail__readout strong { color: var(--text); }
 .detail__empty { font-size: 13px; padding: 8px 0; }
 
 .site-foot { margin-top: 40px; font-size: 12.5px; }
