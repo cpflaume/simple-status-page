@@ -139,15 +139,25 @@ function bucketByHour(samples) {
   });
 }
 
-/* One column = a latency bar (height ∝ ms, coloured by status) over a status
- * chip. Rendered newest-last so the strip reads left→right in time. */
-function buildSpark(points, level) {
+/* Largest latency across the visible points; sets the top of the y-axis so
+ * every bar is drawn as a fraction of it. Never below 1 to avoid /0. */
+function maxLatency(points) {
   var maxMs = 1;
   points.forEach(function (p) { if (typeof p.ms === "number" && p.ms > maxMs) maxMs = p.ms; });
+  return maxMs;
+}
 
+/* One column = a latency bar (height ∝ ms, scaled to maxMs, coloured by
+ * status) over a status chip. Rendered newest-last so the strip reads
+ * left→right in time. Clicking (or Enter/Space on) a column calls onSelect
+ * with that point so the caller can show its exact values. */
+function buildSpark(points, level, maxMs, onSelect) {
   var spark = el("div", "spark spark--" + level);
+  var selected = null;
   points.forEach(function (p) {
     var col = el("div", "spark__col");
+    col.setAttribute("role", "button");
+    col.setAttribute("tabindex", "0");
     var hasMs = typeof p.ms === "number";
     var h = hasMs ? Math.max(6, Math.round((p.ms / maxMs) * 100)) : 100;
 
@@ -163,9 +173,75 @@ function buildSpark(points, level) {
     var msText = hasMs ? p.ms + " ms" : "no latency";
     var extra = level === "hour" ? " · " + p.count + " probe" + (p.count === 1 ? "" : "s") : "";
     col.title = when + " · " + (STATUS_LABEL[p.s] || p.s) + " · " + msText + extra;
+
+    function select() {
+      if (selected) selected.classList.remove("spark__col--sel");
+      col.classList.add("spark__col--sel");
+      selected = col;
+      onSelect(p, level);
+    }
+    col.addEventListener("click", select);
+    col.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(); }
+    });
+
     spark.appendChild(col);
   });
   return spark;
+}
+
+/* Short local time (HH:MM) for an x-axis tick. */
+function fmtAxisTime(iso) {
+  var d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
+
+/* Short local day (Mon D) for an x-axis tick — shown only when the day rolls
+ * over so a multi-day range stays unambiguous. */
+function fmtAxisDay(iso) {
+  var d = new Date(iso);
+  if (isNaN(d)) return "";
+  return d.toLocaleString(undefined, { month: "short", day: "numeric" });
+}
+
+/* A time ruler under the strip. One cell per column — matching the spark's
+ * flex layout so ticks line up with the bars above — but labelled only at a
+ * handful of evenly spaced columns (always including the last, newest one).
+ * The date is printed the first time it appears and whenever it changes. */
+function buildXAxis(points, level) {
+  var axis = el("div", "spark-xaxis spark-xaxis--" + level);
+  var n = points.length;
+  var step = Math.max(1, Math.ceil(n / 5));
+
+  var ticks = {};
+  for (var i = 0; i < n; i += step) ticks[i] = true;
+  // Drop any auto tick that would crowd the final one, then always label it.
+  Object.keys(ticks).forEach(function (k) {
+    var idx = Number(k);
+    if (idx !== n - 1 && n - 1 - idx < step) delete ticks[idx];
+  });
+  ticks[n - 1] = true;
+
+  var lastDay = null;
+  points.forEach(function (p, i) {
+    var cell = el("div", "spark-xaxis__cell");
+    if (ticks[i]) {
+      if (i === 0) cell.classList.add("spark-xaxis__cell--start");
+      if (i === n - 1) cell.classList.add("spark-xaxis__cell--end");
+      cell.appendChild(el("div", "spark-xaxis__mark"));
+      var label = el("div", "spark-xaxis__label");
+      var day = fmtAxisDay(p.t);
+      if (day && day !== lastDay) {
+        label.appendChild(el("span", "spark-xaxis__day", day));
+        lastDay = day;
+      }
+      label.appendChild(el("span", null, fmtAxisTime(p.t)));
+      cell.appendChild(label);
+    }
+    axis.appendChild(cell);
+  });
+  return axis;
 }
 
 function renderDetailBody(body, history) {
@@ -196,22 +272,67 @@ function renderDetailBody(body, history) {
   var wrap = el("div", "detail__stripwrap");
   wrap.appendChild(strip);
 
+  // Latency axis label + scale, fixed to the left of the scrolling strip.
+  var yaxis = el("div", "detail__yaxis");
+  var plot = el("div", "detail__plot");
+  plot.appendChild(yaxis);
+  plot.appendChild(wrap);
+
+  // Exact values for the bar the user clicks; starts as a how-to hint.
+  var readout = el("div", "detail__readout muted");
+
   body.appendChild(controls);
-  body.appendChild(wrap);
+  body.appendChild(plot);
   body.appendChild(meta);
+  body.appendChild(readout);
+
+  function resetReadout() {
+    readout.textContent = "";
+    readout.appendChild(
+      el("span", null, "Tip: click any bar to read its exact time, status and latency.")
+    );
+  }
+
+  function showReadout(p, level) {
+    readout.textContent = "";
+    var hasMs = typeof p.ms === "number";
+    readout.appendChild(
+      el("strong", null, hasMs ? p.ms + " ms" + (level === "hour" ? " avg" : "") : "no latency")
+    );
+    var when = level === "hour" ? fmtClock(p.t) + " (hour)" : fmtTime(p.t);
+    var tail = " · " + (STATUS_LABEL[p.s] || p.s) + " · " + when;
+    if (level === "hour") tail += " · " + p.count + " probe" + (p.count === 1 ? "" : "s");
+    readout.appendChild(document.createTextNode(tail));
+  }
 
   function draw() {
     Object.keys(buttons).forEach(function (k) {
       buttons[k].classList.toggle("zoom-btn--on", k === state.level);
     });
     var points = state.level === "hour" ? bucketByHour(samples) : samples;
+    var maxMs = maxLatency(points);
+
     strip.textContent = "";
-    strip.appendChild(buildSpark(points, state.level));
+    strip.appendChild(buildSpark(points, state.level, maxMs, showReadout));
+    strip.appendChild(buildXAxis(points, state.level));
+
+    // y-axis: bars are scaled to the largest latency in view, so label the
+    // top of the scale with that value and the baseline with 0.
+    yaxis.textContent = "";
+    yaxis.appendChild(el("div", "detail__ycap", "Latency (ms)"));
+    var yticks = el("div", "detail__yticks");
+    yticks.appendChild(el("div", "detail__ytick", String(maxMs)));
+    yticks.appendChild(el("div", "detail__ytick", "0"));
+    yaxis.appendChild(yticks);
+
     var first = points[0], last = points[points.length - 1];
     meta.textContent =
       points.length + (state.level === "hour" ? " hours" : " probes") +
       " · " + fmtClock(first.t) + " → " + fmtClock(last.t) +
+      " · local time, oldest → newest" +
       (state.level === "raw" ? " · ~10 min apart" : "");
+
+    resetReadout();
     // Newest is on the right; keep it in view.
     wrap.scrollLeft = wrap.scrollWidth;
   }
