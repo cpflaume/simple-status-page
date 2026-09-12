@@ -33,8 +33,14 @@ HISTORY_DIR = DATA_DIR / "history"
 
 # Retention: how much history to keep. Kept small so the committed data files
 # (and thus git history / the deployed artifact) stay tiny.
-MAX_DAYS = 90       # daily uptime buckets -> the 90-day bar
-MAX_SAMPLES = 200   # recent raw samples -> latency sparkline / recent timeline
+MAX_DAYS = 90       # daily uptime buckets -> the daily uptime bar
+MAX_SAMPLES = 200   # recent raw samples -> latency sparkline / 10-min zoom
+
+# How the frontend sizes the daily bar. The bar never shrinks below ``min_days``
+# (older cells render grey as "no data") and never grows past ``max_days``;
+# between the two it stretches to fit however much history actually exists.
+# Overridable per-site via a top-level ``display:`` block in services.yaml.
+DEFAULT_DISPLAY = {"min_days": 30, "max_days": 90}
 
 # Overall banner wording, indexed the same way as check severity.
 OVERALL_TEXT = {
@@ -74,7 +80,7 @@ def save_history(check_id: str, history: dict) -> None:
         fh.write("\n")
 
 
-def update_history(history: dict, result, now: datetime) -> dict:
+def update_history(history: dict, result, now: datetime, max_days: int = MAX_DAYS) -> dict:
     """Fold one result into the rolling history and prune to retention."""
     today = now.date().isoformat()
 
@@ -86,7 +92,7 @@ def update_history(history: dict, result, now: datetime) -> dict:
     bucket[result.status] = bucket.get(result.status, 0) + 1
     bucket["total"] += 1
 
-    cutoff = (now.date() - timedelta(days=MAX_DAYS - 1)).isoformat()
+    cutoff = (now.date() - timedelta(days=max_days - 1)).isoformat()
     history["days"] = sorted(
         (d for d in days.values() if d["date"] >= cutoff), key=lambda d: d["date"]
     )
@@ -134,6 +140,23 @@ def uptime_last_24h(samples: list[dict], now: datetime) -> float | None:
     return round(100.0 * (len(recent) - down) / len(recent), 3)
 
 
+def resolve_display(config: dict) -> dict:
+    """Read the ``display:`` block, falling back to defaults and sane bounds.
+
+    Returns ``{"min_days", "max_days"}`` the frontend uses to size the bar.
+    ``min_days`` is clamped to never exceed ``max_days``.
+    """
+    display = dict(DEFAULT_DISPLAY)
+    cfg = config.get("display") or {}
+    for key in ("min_days", "max_days"):
+        value = cfg.get(key)
+        if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+            display[key] = value
+    if display["min_days"] > display["max_days"]:
+        display["min_days"] = display["max_days"]
+    return display
+
+
 def overall_status(statuses: list[str]) -> str:
     """Roll individual check statuses up into one banner state."""
     if not statuses:
@@ -152,12 +175,16 @@ def main() -> int:
     config = load_config()
     now = datetime.now(timezone.utc).replace(microsecond=0)
 
+    display = resolve_display(config)
+    # Keep enough daily buckets to fill the widest bar the frontend may draw.
+    retain_days = max(MAX_DAYS, display["max_days"])
+
     checks_out: list[dict] = []
     for group_name, check in iter_checks(config):
         checker = get_checker(check["type"])
         result = checker.run(check, config.get("defaults", {}))
 
-        history = update_history(load_history(check["id"]), result, now)
+        history = update_history(load_history(check["id"]), result, now, retain_days)
         save_history(check["id"], history)
 
         checks_out.append(
@@ -187,6 +214,7 @@ def main() -> int:
         "generated_at": now.isoformat(),
         "overall_status": state,
         "overall_text": OVERALL_TEXT[state],
+        "display": display,
         "checks": checks_out,
     }
 

@@ -117,8 +117,22 @@ a { color: inherit; }
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin: -4px -6px;
+  padding: 4px 6px;
 }
+.row__head:hover { background: color-mix(in srgb, var(--muted) 8%, transparent); }
+.row__head:focus-visible { outline: 2px solid var(--up); outline-offset: 2px; }
 .row__name { font-weight: 600; }
+.row__caret {
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  transition: transform 0.15s ease;
+}
+.row--open .row__caret { transform: rotate(90deg); }
 .row__detail { font-size: 12.5px; margin-top: 2px; }
 
 .pill {
@@ -158,6 +172,84 @@ a { color: inherit; }
   font-size: 12px;
   margin-top: 6px;
 }
+
+/* --- zoom / detail panel --- */
+.detail {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+.detail__controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.zoom-btn {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+.zoom-btn:hover { color: var(--text); }
+.zoom-btn--on {
+  color: var(--up);
+  border-color: var(--up);
+  background: var(--up-soft);
+}
+
+.detail__stripwrap {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.detail__strip { min-width: 100%; }
+
+.spark {
+  display: flex;
+  gap: 2px;
+  align-items: stretch;
+  height: 72px;
+}
+.spark--raw .spark__col { min-width: 5px; }
+.spark--hour .spark__col { min-width: 10px; }
+.spark__col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: flex-end;
+}
+.spark__track {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  min-height: 0;
+}
+.spark__bar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: var(--nodata);
+  min-height: 2px;
+}
+.spark__bar--up { background: var(--up); }
+.spark__bar--degraded { background: var(--degraded); }
+.spark__bar--down { background: var(--down); }
+.spark__bar--nolat { opacity: 0.55; }
+.spark__chip {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--nodata);
+}
+.spark__chip--up { background: var(--up); }
+.spark__chip--degraded { background: var(--degraded); }
+.spark__chip--down { background: var(--down); }
+
+.detail__meta { font-size: 12px; margin-top: 8px; }
+.detail__empty { font-size: 13px; padding: 8px 0; }
 
 .site-foot { margin-top: 40px; font-size: 12.5px; }
 .site-foot p { margin: 4px 0; }

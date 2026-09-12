@@ -19,6 +19,17 @@
 name: copf-demo status
 description: Live status of the public copf-demo.de services.
 
+# How the daily uptime bar is sized on the page.
+#   min_days  the bar never shrinks below this; when less history exists the
+#             older cells render grey ("no data")
+#   max_days  the bar never grows past this (older history is not shown)
+# Between the two the bar stretches to fit however many days of data actually
+# exist (measured across all services). Raising max_days above 90 also raises
+# how many daily buckets the collector retains.
+display:
+  min_days: 30
+  max_days: 90
+
 # Applied to every check unless the check overrides them.
 defaults:
   timeout: 10            # seconds before a probe is considered failed

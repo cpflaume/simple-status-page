@@ -218,6 +218,48 @@ def test_sample_cap():
     assert len(history["samples"]) == collect.MAX_SAMPLES
 
 
+def test_resolve_display_defaults():
+    d = collect.resolve_display({})
+    assert d == {"min_days": 30, "max_days": 90}
+    # A bare/malformed block still yields the defaults.
+    assert collect.resolve_display({"display": None}) == {"min_days": 30, "max_days": 90}
+
+
+def test_resolve_display_overrides():
+    d = collect.resolve_display({"display": {"min_days": 7, "max_days": 180}})
+    assert d == {"min_days": 7, "max_days": 180}
+
+
+def test_resolve_display_clamps_and_ignores_bad_values():
+    # min never exceeds max.
+    d = collect.resolve_display({"display": {"min_days": 200, "max_days": 90}})
+    assert d == {"min_days": 90, "max_days": 90}
+    # Non-positive / wrong-typed values fall back to the default for that key.
+    d = collect.resolve_display({"display": {"min_days": 0, "max_days": "lots"}})
+    assert d == {"min_days": 30, "max_days": 90}
+    # Booleans are not accepted as day counts.
+    d = collect.resolve_display({"display": {"min_days": True}})
+    assert d["min_days"] == 30
+
+
+def test_update_history_respects_custom_retention():
+    from checkers.base import CheckResult
+
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    history = {"days": [], "samples": []}
+    # A day 100 back is kept when retention is widened to 180, pruned at 90.
+    old = (now.date() - timedelta(days=100)).isoformat()
+    history["days"].append({"date": old, "up": 1, "degraded": 0, "down": 0, "total": 1})
+
+    kept = collect.update_history(dict(history, days=list(history["days"])),
+                                 CheckResult(STATUS_UP, 5), now, max_days=180)
+    assert any(d["date"] == old for d in kept["days"])
+
+    pruned = collect.update_history(dict(history, days=list(history["days"])),
+                                    CheckResult(STATUS_UP, 5), now, max_days=90)
+    assert all(d["date"] != old for d in pruned["days"])
+
+
 def test_uptime_last_24h():
     now = datetime.now(timezone.utc).replace(microsecond=0)
     samples = [
