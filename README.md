@@ -80,6 +80,32 @@ groups:
 Set `enabled: false` to keep a check defined but not run. Config-wide fallbacks
 live under `defaults:` (`timeout`, `degraded_latency_ms`).
 
+### Sizing the uptime bar: `display:`
+
+The per-service bar no longer fixes itself to 90 days. A top-level `display:`
+block controls how wide it grows:
+
+```yaml
+display:
+  min_days: 30   # bar never shrinks below this (missing older days show grey)
+  max_days: 90   # bar never grows past this (older history is not shown)
+```
+
+Between the two bounds the bar stretches to fit however much history actually
+exists — measured across **all** services, so every row stays aligned. With
+little data yet the bar stays at `min_days` and the empty older cells render
+grey, exactly as before. Raising `max_days` above 90 also raises how many daily
+buckets the collector retains. Omit the block entirely to get the `30 / 90`
+defaults.
+
+### Zooming in to the raw samples
+
+Click any service row to expand a detail panel that plots the recent raw probes
+(kept in `data/history/<id>.json`, ~10 min apart). Toggle between **10 min**
+(one bar per probe) and **Hourly** (probes averaged per hour); bar height tracks
+latency and colour tracks status, so a slow-but-up blip and a hard outage read
+differently at a glance.
+
 ## Extending to new data sources
 
 This is the design's core: the collector and the page only ever see a
@@ -177,7 +203,7 @@ collector/
 public/                       the static page (index.html, assets, CNAME)
 data/                         committed status snapshot + per-check history
   summary.json                latest state (what the page loads)
-  history/<id>.json           rolling 90-day daily buckets + recent samples
+  history/<id>.json           rolling daily buckets + recent samples
 .github/workflows/monitor.yml the scheduled collect + deploy job
 tests/                        collector unit tests
 ```
@@ -186,10 +212,10 @@ tests/                        collector unit tests
 
 - `data/summary.json` — overall roll-up + current state, uptime (24 h / 90 d),
   and a per-day status array for each check.
-- `data/history/<id>.json` — `days[]` (up to 90 daily buckets:
-  up/degraded/down counts) and `samples[]` (last 200 raw probes). Retention is
-  capped so the committed files stay tiny.
+- `data/history/<id>.json` — `days[]` (daily buckets: up/degraded/down counts,
+  retained to at least `display.max_days`) and `samples[]` (last 200 raw probes,
+  driving the 10-min zoom). Retention is capped so the committed files stay tiny.
 
 Uptime counts anything not hard-`down` as available (a `degraded` service is
-still serving). The 90-day bar colours each day green / amber / red / grey (no
-data).
+still serving). The daily bar colours each day green / amber / red / grey (no
+data) and is sized by the `display:` block (see above).
