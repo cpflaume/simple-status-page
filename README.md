@@ -186,11 +186,21 @@ mkdir -p _site && cp -R public/. _site/ && cp -R data _site/data
 python -m http.server -d _site 8000               # open http://localhost:8000/
 ```
 
-Run the tests (no network needed — they probe loopback servers):
+Run the collector tests (no network needed — they probe loopback servers):
 
 ```bash
 pip install -r tests/requirements.txt
 pytest tests/ -q
+```
+
+Run the UI tests (Playwright drives the real page against a fixture dataset and
+asserts the JSON is correctly reflected on the page):
+
+```bash
+cd tests/ui
+npm ci
+npx playwright install --with-deps chromium
+npx playwright test
 ```
 
 ## Layout
@@ -205,7 +215,9 @@ data/                         committed status snapshot + per-check history
   summary.json                latest state (what the page loads)
   history/<id>.json           rolling daily buckets + recent samples
 .github/workflows/monitor.yml the scheduled collect + deploy job
+.github/workflows/ui-tests.yml UI tests: JSON is reflected on the page
 tests/                        collector unit tests
+  ui/                         Playwright UI tests (data → page)
 ```
 
 ## Data model

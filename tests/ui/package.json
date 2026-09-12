@@ -1,0 +1,13 @@
+{
+  "name": "simple-status-page-ui-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright UI tests: verify data/summary.json is correctly reflected on the status page.",
+  "scripts": {
+    "test": "playwright test",
+    "serve": "node serve.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.0"
+  }
+}
