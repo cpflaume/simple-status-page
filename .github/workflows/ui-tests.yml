@@ -1,0 +1,59 @@
+name: ui-tests
+
+# Verifies that the data published as JSON (data/summary.json + data/history/*)
+# is correctly reflected on the status page. Playwright drives the real page
+# (public/) against a deterministic fixture dataset and asserts every rendered
+# value traces back to that JSON.
+#
+# Runs on pull requests and pushes that touch the page, the tests, or this
+# workflow — NOT on the scheduled data-only commits the monitor makes.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "public/**"
+      - "tests/ui/**"
+      - ".github/workflows/ui-tests.yml"
+  pull_request:
+    paths:
+      - "public/**"
+      - "tests/ui/**"
+      - ".github/workflows/ui-tests.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests/ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: tests/ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI tests
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/ui/playwright-report
+          retention-days: 7
+          if-no-files-found: ignore
