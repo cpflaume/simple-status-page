@@ -1,7 +1,7 @@
 {
   "name": "copf-demo status",
   "description": "Live status of the public copf-demo.de services.",
-  "generated_at": "2026-10-03T22:13:02+00:00",
+  "generated_at": "2026-10-04T00:45:20+00:00",
   "overall_status": "operational",
   "overall_text": "All systems operational",
   "display": {
@@ -16,9 +16,9 @@
       "type": "http",
       "url": "https://announcements.copf-demo.de/",
       "status": "up",
-      "latency_ms": 404,
+      "latency_ms": 456,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:02+00:00",
+      "checked_at": "2026-10-04T00:45:20+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -139,6 +139,11 @@
         },
         {
           "date": "2026-10-03",
+          "status": "up",
+          "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
           "status": "up",
           "uptime": 100.0
         }
@@ -151,9 +156,9 @@
       "type": "http",
       "url": "https://jurtenburg.copf-demo.de/",
       "status": "up",
-      "latency_ms": 385,
+      "latency_ms": 448,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:03+00:00",
+      "checked_at": "2026-10-04T00:45:20+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -276,6 +281,11 @@
           "date": "2026-10-03",
           "status": "up",
           "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
+          "status": "up",
+          "uptime": 100.0
         }
       ]
     },
@@ -286,11 +296,11 @@
       "type": "http",
       "url": "https://provisioncalculator.copf-demo.de/",
       "status": "up",
-      "latency_ms": 366,
+      "latency_ms": 475,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:03+00:00",
+      "checked_at": "2026-10-04T00:45:21+00:00",
       "uptime_24h": 100.0,
-      "uptime_90d": 99.315,
+      "uptime_90d": 99.32,
       "days": [
         {
           "date": "2026-09-10",
@@ -411,6 +421,11 @@
           "date": "2026-10-03",
           "status": "up",
           "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
+          "status": "up",
+          "uptime": 100.0
         }
       ]
     },
@@ -421,9 +436,9 @@
       "type": "http",
       "url": "https://backup.copf-demo.de/",
       "status": "up",
-      "latency_ms": 339,
+      "latency_ms": 453,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:03+00:00",
+      "checked_at": "2026-10-04T00:45:21+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -544,6 +559,11 @@
         },
         {
           "date": "2026-10-03",
+          "status": "up",
+          "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
           "status": "up",
           "uptime": 100.0
         }
@@ -556,9 +576,9 @@
       "type": "http",
       "url": "https://showcase.copf-demo.de/",
       "status": "up",
-      "latency_ms": 311,
+      "latency_ms": 460,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:04+00:00",
+      "checked_at": "2026-10-04T00:45:22+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -679,6 +699,11 @@
         },
         {
           "date": "2026-10-03",
+          "status": "up",
+          "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
           "status": "up",
           "uptime": 100.0
         }
@@ -691,9 +716,9 @@
       "type": "http",
       "url": "https://announcements.copf-demo.de/v3/api-docs",
       "status": "up",
-      "latency_ms": 318,
+      "latency_ms": 365,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:04+00:00",
+      "checked_at": "2026-10-04T00:45:22+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -814,6 +839,11 @@
         },
         {
           "date": "2026-10-03",
+          "status": "up",
+          "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
           "status": "up",
           "uptime": 100.0
         }
@@ -826,9 +856,9 @@
       "type": "http",
       "url": "https://jurtenburg.copf-demo.de/v3/api-docs",
       "status": "up",
-      "latency_ms": 394,
+      "latency_ms": 429,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:04+00:00",
+      "checked_at": "2026-10-04T00:45:23+00:00",
       "uptime_24h": 100.0,
       "uptime_90d": 100.0,
       "days": [
@@ -951,6 +981,11 @@
           "date": "2026-10-03",
           "status": "up",
           "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
+          "status": "up",
+          "uptime": 100.0
         }
       ]
     },
@@ -961,11 +996,11 @@
       "type": "http",
       "url": "https://provisioncalculator.copf-demo.de/v3/api-docs",
       "status": "up",
-      "latency_ms": 373,
+      "latency_ms": 454,
       "detail": "HTTP 200",
-      "checked_at": "2026-10-03T22:13:05+00:00",
+      "checked_at": "2026-10-04T00:45:23+00:00",
       "uptime_24h": 100.0,
-      "uptime_90d": 99.315,
+      "uptime_90d": 99.32,
       "days": [
         {
           "date": "2026-09-10",
@@ -1084,6 +1119,11 @@
         },
         {
           "date": "2026-10-03",
+          "status": "up",
+          "uptime": 100.0
+        },
+        {
+          "date": "2026-10-04",
           "status": "up",
           "uptime": 100.0
         }
